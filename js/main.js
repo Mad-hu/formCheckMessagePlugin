@@ -3,6 +3,7 @@
  * version:Beta v0.2
  * author: Mad Hu
  * Change by hu on 2016/6/13
+ * github:https://github.com/Mad-hu/formCheckMessagePlugin
  * desc:
  * 简单使用：使用的时候，添加下边得属性即可
  $(function(){
