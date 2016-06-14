@@ -95,7 +95,7 @@
 
                 if(insertMod) {
                     ///直接往下挤的
-                    console.log("往下挤1");
+                    console.log("往下挤");
                     insertHTML = "<div class=\"tishi_new_1 " + addClassName + "\" style=\"margin-left:" + leftPosition + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'>" + contentHtml + "</div>";
                 }else{
                     ///需要定位的
@@ -154,7 +154,7 @@
                     ///验证失败就替换为错误的X号显示。默认的
                     datatypeChange("error");
                     childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
-                    childsNode.last().css("color",errorColor).css("display","inline").text(msgCode);
+                    childsNode.last().css("color",errorColor).css("display","inline").text(msg);
                 }
             });
         }

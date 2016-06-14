@@ -48,7 +48,7 @@
     $(function(){
         //验证金额非空
         $('#username').STInputCheckMsg({
-            'msg': "充值金额不能为空！",
+            'msg': "充值金额不能为空1！",
             'regex':/^(?=.*\S+)((?!必填).)*$/,
             'left':65,
             'insert':true,
@@ -56,14 +56,14 @@
         });
 
         $('#money1').STInputCheckMsg({
-            'msg': "充值金额不能为空！",
+            'msg': "充值金额不能为空2！",
             'regex':/^(?=.*\S+)((?!必填).)*$/,
             'firstExist':false
         });
 
         ///由于标签是自己定义的，这种方式很多属性不能被使用，
         $('#money2').STInputCheckMsg({
-            'msg': "充值金额不能为空！",
+            'msg': "充值金额不能为空3！",
             'regex':/^(?=.*\S+)((?!必填).)*$/,
             'signExist':true,
         });
