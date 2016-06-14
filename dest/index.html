@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="//cdn.bootcss.com/jquery/1.12.3/jquery.js"></script>
+    <script src="js/main.min.js"></script>
+    <link rel="stylesheet" href="css/style.min.css">
+    <link rel="stylesheet" href="css/iconfont/iconfont.css">
+</head>
+<body>
+
+<div class="main">
+
+    <div class="container">
+        <form action="" class="index-form">
+            <!--直接插入到input 下边显示提示信息，如果下边有数据，直接被挤到下边去-->
+            <div class="style1">
+                项目名称<input type="text" id="username">
+            </div>
+            <!--浮动到input下方,会获取input的绝对位置+input的高度+3px的留白，即显示提示信息的位置。-->
+            <div class="style2">
+                项目名称<input type="text" id="money1">
+                <span>元</span>
+            </div>
+
+            <!--自定义标记位置，自定义标记样式。手动控制，标记可以随便写，写在哪里都行-->
+            <div class="style3">
+                项目名称<input type="text" id="money2">
+                <span>元</span>
+                <!--自定义标记位置，自定义标记样式，这里除了id必须是 input的id+msg datatype控制error success，其他得样式操作都需要自己手动控制-->
+                <div class="tishi_new_1 " style="margin-left:65px" id="money2msg" datatype="error">
+                    <i class="iconfont icon" style="display:none;font-size:16px; color: #fe4850"></i>
+                    <span style="color:#fe4850;float:none;font-size: 14px;margin-left: 5px;line-height: 25px;display: none;width: auto;">充值金额不能为空！</span>
+                </div>
+                <div style="margin-left: 65px;">银行限额信息，或者其他的需要在input下边显示得信息</div>
+            </div>
+
+            <div class="style4">
+
+            </div>
+
+        </form>
+    </div>
+</div>
+<script>
+
+    $(function(){
+        //验证金额非空
+        $('#username').STInputCheckMsg({
+            'msg': "充值金额不能为空！",
+            'regex':/^(?=.*\S+)((?!必填).)*$/,
+            'left':65,
+            'insert':true,
+            'firstExist':true
+        });
+
+        $('#money1').STInputCheckMsg({
+            'msg': "充值金额不能为空！",
+            'regex':/^(?=.*\S+)((?!必填).)*$/,
+            'firstExist':false
+        });
+
+        ///由于标签是自己定义的，这种方式很多属性不能被使用，
+        $('#money2').STInputCheckMsg({
+            'msg': "充值金额不能为空！",
+            'regex':/^(?=.*\S+)((?!必填).)*$/,
+            'signExist':true,
+        });
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 /**
  * Created by Administrator on 2016/6/7.
- * version:Beta v0.2
+ * version:Beta v0.3
  * author: Mad Hu
  * Change by hu on 2016/6/13
  * github:https://github.com/Mad-hu/formCheckMessagePlugin
@@ -35,7 +35,7 @@
                 'insert': false,
                 'regex':/^[0-9]{1,20}$/,
                 'addClassName':"",
-                'left':'0',
+                'left':0,
                 'URL':'',
                 'params':{},
                 'firstExist':false,
@@ -48,32 +48,36 @@
         beautify: function() {
             var opt = this.options;
 
-            var msg = opt.msg;
-            var msgType = opt.msgType;
-            var position = opt.insert;
-            var addClassName = opt.addClassName;
-            var marginLeft = opt.left;
-            var regex = opt.regex;
-            var url = opt.URL;
-            var params = opt.params;
+            var msg = opt.msg;               //正则校验提示信息 ""
+            var msgType = opt.msgType;       //正则校验提示类型 error success
+            var insertMod = opt.insert;       //插入浮动 true false
+            var addClassName = opt.addClassName; //添加额外样式 ""
+            var leftPosition = opt.left;        //左边调整
+            var regex = opt.regex;            //前台验证的正则表达式
+            var url = opt.URL;                 //提交到后台得地址
+            var params = opt.params;          //提交后台需要传入的参数
             var firstExist = opt.firstExist? "inline":"none"; //初始是否显示提示标签，用与刚开始不显示和刚开始显示提示信息开关
             var signExist = opt.signExist; //用于自定义提示标签，提示标签是否已经存在，true提示标签已经存在，不再创建。提示标签可以写在任意的地方，但是id必须和要验证的input的id相同例如：input id 为userNameID ,提示标签的id必须为userNameIDmsg,这样才能匹配验证
 
-            var objInput =this.$element[0];
+            var objInput =this.$element[0];  //当前input标签
+
+            var inputHeight = $(objInput).height();
+            var offsetLeft = $(objInput).offset().left;  // input标签相对与文档左边距离
+            var offsetTop = $(objInput).offset().top;    // input标签相对于文档上边距离
+
 
             ///存储msg的颜色，根据type类型 错误红色，警告黄色，成功绿色
             var msgColor = "";
             //存储msg的图片路径，图片分为 错误，警告，成功 以后可能用iconfont代替，这里暂时用一个错误的
             var msgImgIcon = "";
 
-            var successImg = "&#xe64c; "
-            var warnningImg = "&#xe613; "
-            var errorImg = "&#xe60e;"
+            var successImg = "&#xe64c;"   //成功的iconfont
+            var warnningImg = "&#xe613;"  //警告的iconfont
+            var errorImg = "&#xe60e;"     //错误的iconfont
 
-            var errorColor = '#fe4850'
-            var warnningColor = 'orange'
-            var successColor = '#84c84d'
-
+            var errorColor = '#fe4850'    //错误的颜色
+            var warnningColor = 'orange'  //警告的颜色
+            var successColor = '#84c84d'  //成功的颜色
 
 
             ///支持错误的信息显示，警告和成功的暂时不支持
@@ -85,28 +89,34 @@
             var insertHTML = "";
 
             if(!signExist){
-                if(position) {
+                var iconHtml = "<i class=\"iconfont icon\" style=\"display:" + firstExist +";font-size:16px; color: " + msgColor + "\">" + msgImgIcon + "</i>";
+                var spanHtml = "<span style=\"color:" + msgColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px;display: " + firstExist+ ";width: auto;\">" + msg +"</span>";
+                var contentHtml = iconHtml + spanHtml;
+
+                if(insertMod) {
                     ///直接往下挤的
-                    console.log("往下挤");
-                    insertHTML = "<p class=\"tishi_new_1 " + addClassName + "\" style=\"left:" + marginLeft + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'><i class=\"iconfont icon\" style=\"display:" + firstExist +";font-size:16px; color: " + msgColor + "\">" + msgImgIcon + "</i><span style=\"color:" + msgColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px;display: " + firstExist+ ";margin: 0 0 0 5px;width: auto;\">" + msg +"</span></p>";
+                    console.log("往下挤1");
+                    insertHTML = "<div class=\"tishi_new_1 " + addClassName + "\" style=\"margin-left:" + leftPosition + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'>" + contentHtml + "</div>";
                 }else{
                     ///需要定位的
-                    insertHTML = "<div class=\"tishi_new " + addClassName + "\" style=\"left:" + marginLeft + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'><i class=\"iconfont icon\" style=\"display:" + firstExist +";font-size:16px; color: " + msgColor + "\">" + msgImgIcon + "</i><span style=\"color: " + msgColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px;display: " + firstExist+ ";margin: 0 0 0 5px;width: auto;\">" + msg + "</span></div>";
+                    var leftOffsetDiv =  leftPosition + offsetLeft; //自定义据左  +  input标签现有据左位置 为提示标记浮动的绝对定位左边位置
+                    var topOffsetDiv =  offsetTop + inputHeight + 3;    //input标签据上位置 + input的高度  为标记浮动上边位置
+                    insertHTML = "<div class=\"tishi_new " + addClassName + "\" style=\"top: " + topOffsetDiv + "px;left:" + leftOffsetDiv + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'>" + contentHtml + "</div>";
                 }
             }
 
             $(objInput).after(insertHTML);
-            function successChange(){
+            function datatypeChange(signText){
                 ///改变最外层失败和成功的标志
-                $("#" + $(objInput)[0].id + "msg").attr("datatype","success");
+                $("#" + $(objInput)[0].id + "msg").attr("datatype",signText);
             }
-            function errorChange(errorMsg){
-
-            }
+            ///当input被改变的时候触发
             $(objInput).change(function(){
+                ///获取input 提示信息中所有的子元素
+                var childsNode = $("#" + $(objInput)[0].id + "msg").children();
+
                 ///正则前台判断
                 if(regex.test(""+this.value+"")){
-
                     ///后台验证
                     if(url != ""){
                         params[this.name] = this.value;
@@ -115,46 +125,36 @@
                             var msgCode = data["message"];
                             //请求code为200成功  其他为不成功
                             if(code == 200){
-                                $("#" + $(objInput)[0].id + "msg").attr("datatype","success");
-                                ///验证成功，就替换为成功的对号显示
-                                var successMsgI = "<i class=\"iconfont icon\" style=\"font-size:16px; color: " + successColor + "\">" + successImg + "</i>";
-                                $("#" + $(objInput)[0].id + "msg").children().first().replaceWith(successMsgI);
-                                var successMsgSpan = "<span style=\"color: " + successColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px; display: inline;margin: 0 0 0 5px;width: auto;\">验证通过</span>"
-                                $("#" + $(objInput)[0].id + "msg").children().last().replaceWith(successMsgSpan)
+                                //设置成功标志
+                                datatypeChange("success");
+
+                                childsNode.first().css("color",successColor).css("display","inline").html(successImg);
+                                childsNode.last().css("color",successColor).css("display","inline").text("验证通过");
                             }else{
-                                $("#" + $(objInput)[0].id + "msg").attr("datatype","error");
                                 ///验证失败就替换为错误的X号显示。默认的
-                                var errorMsgI = "<i class=\"iconfont icon\" style=\"font-size:16px; color: " + errorColor + "\">" + errorImg + "</i>";
-                                $("#" + $(objInput)[0].id + "msg").children().first().replaceWith(errorMsgI);
-                                var errorMsgSpan = "<span style=\"color: " + errorColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px;display: inline;margin: 0 0 0 5px;width: auto;\">" + msgCode + "</span>";
-                                $("#" + $(objInput)[0].id + "msg").children().last().replaceWith(errorMsgSpan)
+                                datatypeChange("error");
+
+                                childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
+                                childsNode.last().css("color",errorColor).css("display","inline").text(msgCode);
                             }
-
-
                         }).error(function(data) {
-                            $("#" + $(objInput)[0].id + "msg").attr("datatype","error");
                             ///验证失败就替换为错误的X号显示。默认的
-                            var errorMsgI = "<i class=\"iconfont icon\" style=\"font-size:16px; color: " + errorColor + "\">" + errorImg + "</i>";
-                            $("#" + $(objInput)[0].id + "msg").children().first().replaceWith(errorMsgI);
-                            var errorMsgSpan = "<span style=\"color: " + errorColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px;display: inline;margin: 0 0 0 5px;width: auto;\">服务器无响应</span>";
-                            $("#" + $(objInput)[0].id + "msg").children().last().replaceWith(errorMsgSpan)
+                            datatypeChange("error");
+                            childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
+                            childsNode.last().css("color",errorColor).css("display","inline").text("服务器无响应");
                         })
                     }else{
-                        $("#" + $(objInput)[0].id + "msg").attr("datatype","success");
                         ///验证成功，就替换为成功的对号显示
-                        var successMsgI = "<i class=\"iconfont icon\" style=\"font-size:16px; color: " + successColor + "\">" + successImg + "</i>";
-                        $("#" + $(objInput)[0].id + "msg").children().first().replaceWith(successMsgI);
-                        var successMsgSpan = "<span style=\"color: " + successColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px; display: inline;margin: 0 0 0 5px;width: auto;\">验证通过</span>"
-                        $("#" + $(objInput)[0].id + "msg").children().last().replaceWith(successMsgSpan)
+                        datatypeChange("success");
+                        childsNode.first().css("color",successColor).css("display","inline").html(successImg);
+                        childsNode.last().css("color",successColor).css("display","inline").text("验证通过");
                     }
 
                 }else{
-                    $("#" + $(objInput)[0].id + "msg").attr("datatype","error");
                     ///验证失败就替换为错误的X号显示。默认的
-                    var errorMsgI = "<i class=\"iconfont icon\" style=\"font-size:16px; color: " + errorColor + "\">" + errorImg + "</i>";
-                    $("#" + $(objInput)[0].id + "msg").children().first().replaceWith(errorMsgI);
-                    var errorMsgSpan = "<span style=\"color: " + errorColor + ";float:none;font-size: 14px;margin-left: 5px;line-height: 25px;display: inline;margin: 0 0 0 5px;width: auto;\">" + msg + "</span>";
-                    $("#" + $(objInput)[0].id + "msg").children().last().replaceWith(errorMsgSpan)
+                    datatypeChange("error");
+                    childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
+                    childsNode.last().css("color",errorColor).css("display","inline").text(msgCode);
                 }
             });
         }

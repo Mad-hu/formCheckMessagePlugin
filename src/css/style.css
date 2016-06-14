@@ -1,0 +1,19 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+.tishi_new {
+    position: absolute;
+    line-height:22px;
+}
+
+.tishi_new_1{
+    color: #fe4850;
+    font-size: 14px;
+    line-height: 25px;
+}
+
+.style1,.style2,.style3,.style4{
+    margin: 30px;
+}
