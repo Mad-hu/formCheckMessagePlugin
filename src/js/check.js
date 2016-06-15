@@ -1,6 +1,6 @@
 /**
  * Created by Administrator on 2016/6/7.
- * version:Beta v0.3.1
+ * version:Beta v0.3.2
  * author: Mad Hu
  * Change by hu on 2016/6/13
  * github:https://github.com/Mad-hu/formCheckMessagePlugin
