@@ -1,6 +1,6 @@
 /**
  * Created by Administrator on 2016/6/7.
- * version:Beta v0.3.1
+ * version:Beta v0.3.2
  * author: Mad Hu
  * Change by hu on 2016/6/13
  * github:https://github.com/Mad-hu/formCheckMessagePlugin
@@ -37,6 +37,7 @@
                 'regex':/^[0-9]{1,20}$/,
                 'addClassName':"",
                 'left':0,
+                'top':0,
                 'URL':'',
                 'params':{},
                 'firstExist':false,
@@ -55,6 +56,7 @@
             var insertMod = opt.insert;       //插入浮动 true false
             var addClassName = opt.addClassName; //添加额外样式 ""
             var leftPosition = opt.left;        //左边调整
+            var topPosition = opt.top;        //左边调整
             var regex = opt.regex;            //前台验证的正则表达式
             var url = opt.URL;                 //提交到后台得地址
             var params = opt.params;          //提交后台需要传入的参数
@@ -97,16 +99,31 @@
 
                 if(insertMod) {
                     ///直接往下挤的
-                    console.log("往下挤");
                     insertHTML = "<div class=\"tishi_new_1 " + addClassName + "\" style=\"margin-left:" + leftPosition + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'>" + contentHtml + "</div>";
                 }else{
                     ///需要定位的
-                    var leftOffsetDiv =  leftPosition + offsetLeft; //自定义据左  +  input标签现有据左位置 为提示标记浮动的绝对定位左边位置
-                    var topOffsetDiv =  offsetTop + inputHeight + 3;    //input标签据上位置 + input的高度  为标记浮动上边位置
+                    offsetLeft = $(objInput).offset().left;  // input标签相对与文档左边距离
+                    offsetTop = $(objInput).offset().top;    // input标签相对于文档上边距离
+
+                    var s = parentREAlITIVE($(objInput));
+
+                    var leftOffsetDiv =  offsetLeft + parseInt(leftPosition) - s.offset().left; //自定义据左  +  input标签现有据左位置 为提示标记浮动的绝对定位左边位置
+                    var topOffsetDiv =  offsetTop + inputHeight + 3 + topPosition - s.offset().top;    //input标签据上位置 + input的高度  为标记浮动上边位置
                     insertHTML = "<div class=\"tishi_new " + addClassName + "\" style=\"top: " + topOffsetDiv + "px;left:" + leftOffsetDiv + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'>" + contentHtml + "</div>";
                 }
             }
             $(objInput).after(insertHTML);
+
+
+            function parentREAlITIVE(parentObj){
+                if(parentObj.parent()[0].nodeType != 9){
+                    return parentObj.parent().css("position") == "relative"? $(parentObj).parent():parentREAlITIVE(parentObj.parent());
+                }else{
+                    return $(parentObj)
+                }
+
+//            	 return parentObj.parent().css("position") == "relative"? $(parentObj).parent():parentREAlITIVE(parentObj.parent());
+            }
 
 
             function datatypeChange(signText){
@@ -122,7 +139,6 @@
                 $(objInput).change(function(){
                     var inputText1 = $("#"+compare).val();
                     var inputText2 = $(objInput).val();
-                    console.log(inputText1 + " fsf  " + inputText2);
                     if(inputText1 == inputText2){
                         datatypeChange("success");
                         childsNode.first().css("color",successColor).css("display","inline").html(successImg);
@@ -135,7 +151,6 @@
                     }
 
                 })
-
             }else{
                 //不是比较就调用这个
                 commonFun();
