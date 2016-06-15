@@ -1,6 +1,6 @@
 /**
  * Created by Administrator on 2016/6/7.
- * version:Beta v0.3
+ * version:Beta v0.3.1
  * author: Mad Hu
  * Change by hu on 2016/6/13
  * github:https://github.com/Mad-hu/formCheckMessagePlugin
@@ -24,6 +24,7 @@
  *  params(可选 默认 空json):input提交后台验证的同时，需要添加额外的json参数列表，
  *  firstExist(可选 默认 false):提示信息当页面第一次显示得时候是否显示。默认false提示信息不显示.true第一次进入页面就显示提示信息
  *  signExist(可选 默认 false)： 自定义提示信息位置。正常的操作是提示信息用js插入input后，这种方式是提示信息手动添加到自己想要的位置以后，进行操作。true，将根据input的id+msg，查找对应的提示标签位置。进行显示提示信息操作。其中left addclassName,insert,msgType将失效
+ *  compare(可选 默认空)： 当要比对当前与compareID的input内容的时候可用，其他选项如 正则 不可用，只用于对重复密码的验证
  */
 ;(function($, window, document,undefined) {
     //定义Beautifier的构造函数
@@ -40,6 +41,7 @@
                 'params':{},
                 'firstExist':false,
                 'signExist':false,
+                'compare':''
             },
             this.options = $.extend({}, this.defaults, opt)
     }
@@ -58,7 +60,7 @@
             var params = opt.params;          //提交后台需要传入的参数
             var firstExist = opt.firstExist? "inline":"none"; //初始是否显示提示标签，用与刚开始不显示和刚开始显示提示信息开关
             var signExist = opt.signExist; //用于自定义提示标签，提示标签是否已经存在，true提示标签已经存在，不再创建。提示标签可以写在任意的地方，但是id必须和要验证的input的id相同例如：input id 为userNameID ,提示标签的id必须为userNameIDmsg,这样才能匹配验证
-
+            var compare = opt.compare;     //用于当前input中的内容与 compare指定的input中的内容做比较
             var objInput =this.$element[0];  //当前input标签
 
             var inputHeight = $(objInput).height();
@@ -104,63 +106,92 @@
                     insertHTML = "<div class=\"tishi_new " + addClassName + "\" style=\"top: " + topOffsetDiv + "px;left:" + leftOffsetDiv + "px\" id='" + $(objInput)[0].id + "msg" + "' datatype='" + msgType + "'>" + contentHtml + "</div>";
                 }
             }
-
             $(objInput).after(insertHTML);
+
+
             function datatypeChange(signText){
                 ///改变最外层失败和成功的标志
                 $("#" + $(objInput)[0].id + "msg").attr("datatype",signText);
             }
-            ///当input被改变的时候触发
-            $(objInput).change(function(){
 
-                //$(objInput).bind("",function(){
-                    
+            ///提示标记中的 i 和 span
+            var childsNode = $("#" + $(objInput)[0].id + "msg").children();
 
-                ///获取input 提示信息中所有的子元素
-                var childsNode = $("#" + $(objInput)[0].id + "msg").children();
-
-                ///正则前台判断
-                if(regex.test(""+this.value+"")){
-                    ///后台验证
-                    if(url != ""){
-                        params[this.name] = this.value;
-                        $.post(url,params, function(data) {
-                            var code = data["code"];
-                            var msgCode = data["message"];
-                            //请求code为200成功  其他为不成功
-                            if(code == 200){
-                                //设置成功标志
-                                datatypeChange("success");
-
-                                childsNode.first().css("color",successColor).css("display","inline").html(successImg);
-                                childsNode.last().css("color",successColor).css("display","inline").text("验证通过");
-                            }else{
-                                ///验证失败就替换为错误的X号显示。默认的
-                                datatypeChange("error");
-
-                                childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
-                                childsNode.last().css("color",errorColor).css("display","inline").text(msgCode);
-                            }
-                        }).error(function(data) {
-                            ///验证失败就替换为错误的X号显示。默认的
-                            datatypeChange("error");
-                            childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
-                            childsNode.last().css("color",errorColor).css("display","inline").text("服务器无响应");
-                        })
-                    }else{
-                        ///验证成功，就替换为成功的对号显示
+            if(compare != ""){
+                //对两个框进行比较,两次密码比对。
+                $(objInput).change(function(){
+                    var inputText1 = $("#"+compare).val();
+                    var inputText2 = $(objInput).val();
+                    console.log(inputText1 + " fsf  " + inputText2);
+                    if(inputText1 == inputText2){
                         datatypeChange("success");
                         childsNode.first().css("color",successColor).css("display","inline").html(successImg);
                         childsNode.last().css("color",successColor).css("display","inline").text("验证通过");
+                    }else{
+                        ///验证失败就替换为错误的X号显示。默认的
+                        datatypeChange("error");
+                        childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
+                        childsNode.last().css("color",errorColor).css("display","inline").text(msg);
                     }
 
-                }else{
-                    ///验证失败就替换为错误的X号显示。默认的
-                    datatypeChange("error");
-                    childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
-                    childsNode.last().css("color",errorColor).css("display","inline").text(msg);
-                }
-            });
+                })
+
+            }else{
+                //不是比较就调用这个
+                commonFun();
+            }
+
+            function commonFun(){
+                ///当input被改变的时候触发
+                $(objInput).change(function(){
+
+                    ///获取input 提示信息中所有的子元素
+
+
+                    ///正则前台判断
+                    if(regex.test(""+this.value+"")){
+                        ///后台验证
+                        if(url != ""){
+                            params[this.name] = this.value;
+                            $.post(url,params, function(data) {
+                                var code = data["code"];
+                                var msgCode = data["message"];
+                                //请求code为200成功  其他为不成功
+                                if(code == 200){
+                                    //设置成功标志
+                                    datatypeChange("success");
+
+                                    childsNode.first().css("color",successColor).css("display","inline").html(successImg);
+                                    childsNode.last().css("color",successColor).css("display","inline").text("验证通过");
+                                }else{
+                                    ///验证失败就替换为错误的X号显示。默认的
+                                    datatypeChange("error");
+
+                                    childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
+                                    childsNode.last().css("color",errorColor).css("display","inline").text(msgCode);
+                                }
+                            }).error(function(data) {
+                                ///验证失败就替换为错误的X号显示。默认的
+                                datatypeChange("error");
+                                childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
+                                childsNode.last().css("color",errorColor).css("display","inline").text("服务器无响应");
+                            })
+                        }else{
+                            ///验证成功，就替换为成功的对号显示
+                            datatypeChange("success");
+                            childsNode.first().css("color",successColor).css("display","inline").html(successImg);
+                            childsNode.last().css("color",successColor).css("display","inline").text("验证通过");
+                        }
+
+                    }else{
+                        ///验证失败就替换为错误的X号显示。默认的
+                        datatypeChange("error");
+                        childsNode.first().css("color",errorColor).css("display","inline").html(errorImg);
+                        childsNode.last().css("color",errorColor).css("display","inline").text(msg);
+                    }
+                });
+            }
+
         }
     }
     //在插件中使用Beautifier对象

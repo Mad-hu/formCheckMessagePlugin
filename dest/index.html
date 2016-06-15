@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="//cdn.bootcss.com/jquery/1.12.3/jquery.js"></script>
-    <script src="js/main.min.js"></script>
+    <script src="js/main.js"></script>
     <link rel="stylesheet" href="css/style.min.css">
     <link rel="stylesheet" href="css/iconfont/iconfont.css">
 </head>
@@ -37,6 +37,10 @@
             </div>
 
             <div class="style4">
+                密码框1：<input type="password" id="pass1">
+            </div>
+            <div class="style1">
+                密码框2: <input type="password" id="pass2">
 
             </div>
 
@@ -66,6 +70,16 @@
             'msg': "充值金额不能为空3！",
             'regex':/^(?=.*\S+)((?!必填).)*$/,
             'signExist':true,
+        });
+
+        $('#pass1').STInputCheckMsg({
+            'msg': "密码格式有误！",
+            'regex':/^(?=.*\S+)((?!必填).)*$/,
+        });
+
+        $('#pass2').STInputCheckMsg({
+            'msg': "两次密码不一致",
+            'compare':"pass1"
         });
     });
 

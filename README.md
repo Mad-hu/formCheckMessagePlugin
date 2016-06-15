@@ -3,9 +3,9 @@ This is form validate Plugin for Jquery. It's use the safetou.com for 3.0 versio
 
 
  * Created by Administrator on 2016/6/7.
- * version:Beta v0.3
+ * version:Beta v0.3.2
  * author: Mad Hu
- * Change by hu on 2016/6/14
+ * Change by hu on 2016/6/15
  * desc:
 
  简单使用：使用的时候，添加下边得属性即可
@@ -32,6 +32,16 @@ $(function(){
             'regex':/^(?=.*\S+)((?!必填).)*$/,
             'signExist':true,
         });
+        //第一次密码框
+         $('#pass1').STInputCheckMsg({
+            'msg': "密码格式有误！",
+            'regex':/^(?=.*\S+)((?!必填).)*$/,
+         });
+        //第二次密码框
+         $('#pass2').STInputCheckMsg({
+             'msg': "两次密码不一致",
+             'compare':"pass1"
+         });
     });
 
 ```
@@ -45,7 +55,7 @@ $(function(){
  *  params(可选 默认 空json):input提交后台验证的同时，需要添加额外的json参数列表，
  *  firstExist(可选 默认 false):提示信息当页面第一次显示得时候是否显示。默认false提示信息不显示.true第一次进入页面就显示提示信息
  *  signExist(可选 默认 false)： 自定义提示信息位置。正常的操作是提示信息用js插入input后，这种方式是提示信息手动添加到自己想要的位置以后，进行操作。true，将根据input的id+msg，查找对应的提示标签位置。进行显示提示信息操作。其中left addclassName,insert,msgType将失效
- 
+ * v0.3.2 compare(可选 默认空)： 当要比对当前与compareID的input内容的时候可用，其他选项如 正则 不可用，只用于对重复密码的验证
 ## Demo使用
 如果需要构建项目，则需要安装nodejs ruby 等前端开发框架。
 ```
